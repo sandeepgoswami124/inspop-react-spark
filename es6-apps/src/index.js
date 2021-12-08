@@ -1,19 +1,8 @@
-//literal syntax
+import { firstName, lastName, age, status, address,sayGreet, skills } from './mylib'
 
-let customer = {
-    id: 1,
-    name: 'Subramanian',
-    calculate: function () {
-        return 100;
-    }
-}
-console.log(customer.id, customer.name, customer.calculate())
+import BankService from './services/bank.service'
 
-customer = {
-    id: 1,
-    name: 'Subramanian',
-    calculate() {
-        return 100;
-    }
-}
-console.log(customer.id, customer.name, customer.calculate())
+console.log(firstName, lastName, age, status, address,sayGreet(),skills);
+
+let bService = new BankService();
+console.log(bService.getBalance())
