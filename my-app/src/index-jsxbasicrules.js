@@ -8,7 +8,6 @@ import ReactDOM from 'react-dom'
 //     <h1>Hello React!</h1>
 //     <p>React is more declartive!</p>
 
-
 const Hello = () => <div>
     <h1>Hello React!</h1>
     <p>React is more declartive!</p>

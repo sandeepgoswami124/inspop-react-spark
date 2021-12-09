@@ -998,8 +998,964 @@ function createElement(args){
    document.createElement(args); // low level api call
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
-					component Composition -Component tree
+				component Composition -Component tree
 
+src/body/body.jsx
+import React from "react"
+
+export const Body = () => {
+    return <div>
+        <h2>Declarative</h2>
+        <p>
+            React makes it painless to create interactive UIs. Design simple views for each state in your application, and React will efficiently update and render just the right components when your data changes.
+            Declarative views make your code more predictable and easier to debug.
+        </p>
+        <h2>Component-Based</h2>
+        <p>
+            Build encapsulated components that manage their own state, then compose them to make complex UIs.
+
+            Since component logic is written in JavaScript instead of templates, you can easily pass rich data through your app and keep state out of the DOM
+        </p>
+        <h2>
+            Learn Once, Write Anywhere
+        </h2>
+        <p>
+            We don’t make assumptions about the rest of your technology stack, so you can develop new features in React without rewriting existing code.
+
+            React can also render on the server using Node and power mobile apps using React Native.
+        </p>
+    </div>
+}
+
+src/footer/footer.jsx
+import React from  'react';
+
+export const Footer = () => {
+    return <nav>
+        <hr />
+        <h1>Footer</h1>
+    </nav>
+}
+src/header/header.jsx
+import React from  'react';
+
+export const Footer = () => {
+    return <nav>
+        <hr />
+        <h1>Footer</h1>
+    </nav>
+}
+
+src/layout/layout.jsx
+import React from 'react';
+import { Header } from '../header/header'
+import { Footer } from '../footer/footer'
+import { Body } from '../body/body'
+
+
+export const Layout = () => {
+    return <div>
+        <Header />
+        <Body />
+        <Footer />
+    </div>
+}
+
+src/app.js
+import React from 'react';
+import { Layout } from './layout/layout'
+
+const App = () => <Layout />
+export default App;
+
+
+src/index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App'
+
+ReactDOM.render(<App />, document.getElementById('root'));
+.............................................................................................
+				Barrel export
+.............................................................................................
+
+Use Case :
+
+=>How to avoid multiple import of things from same folder
+=>how to avoid file names while import
+
+Barrel export solves the above problem
+
+src/header
+ -header.jsx
+ -menubar.jsx
+ -index.js
+
+import { Header } from './header'
+import { MenuBar } from './menubar'
+
+
+//barrel export: report
+
+export { Header, MenuBar }
+
+src/layout/layout.jsx
+import React from 'react';
+// import { Header } from '../header/header'
+import { Footer } from '../footer/footer'
+import { Body } from '../body/body'
+import { Header, MenuBar } from './header'; // ./folderName
+// import { MenuBar } from '../header/menubar';
+
+
+export const Layout = () => {
+    return <div>
+        <Header />
+        <MenuBar />
+        <Body />
+        <Footer />
+    </div>
+}
+////////////////////////////////////////////////////////////////////////////////////////////
+				 Dynamic UI
+.............................................................................................
+
+React embeds HTML Code inside javascript.
+
+Static UI:
+  Only HTML code.
+
+Dyanamic UI:
+   Data.
+
+html code + placeholder(data interpolation) = data binding =>dynamic UI
+
+
+Data Binding Design pattern:
+
+1.Property pattern
+2.State Pattern
+
+Place Holder - {data/variable/expression/functionCall}
+ <h2>Your Name {name} </h2>
+
+import React from 'react';
+import ReactDOM from 'react-dom'
+
+const name = "Subramanian";
+
+const Hello = () => {
+    return <h2>Hello {name}</h2>
+}
+
+
+ReactDOM.render(<Hello></Hello>, document.getElementById('root'))
+.............................................................................................
+				 Property Pattern
+.............................................................................................
+
+<div style="color:red"></div>
+ 
+Here div is object inside js engine.
+style is object property.
+which is initalized via declarative pattern.
+
+React also insipired this pattern , introduced pattern called property pattern.
+
+const Profile = ()=>{
+
+   return <div> </div>
+}
+...........................................................................................................
+				Simple Props
+
+import React from 'react';
+import ReactDOM from 'react-dom'
+
+//props = {name:'',message:''}
+const Hello = props => {
+    console.log(props);
+    return <h2>{props.message} {props.name}</h2>
+}
+
+
+// ReactDOM.render(Hello("Subramanian"), document.getElementById('root'))
+ReactDOM.render(<Hello name="Subramanian" message="Hai" />, document.getElementById('root'))
+
+What can be props?  What can be supplied as prop?
+
+->Primitives - strings,numbers,booleans
+->Object - employee,product
+->Array - []
+->function - function myfun(){}
+->Another component as prop
+
+..
+import React from 'react';
+import ReactDOM from 'react-dom'
+
+const Profile = props => {
+    return <div>
+        <h2>Name : {props.name} </h2>
+        <h2>Star: {props.star}</h2>
+        <h2>Status :{props.status ? "Active" : "InActive"}</h2>
+        <address>City {props.address.city}</address>
+        <h2>Friends</h2>
+        <ul>
+            {
+                props.friends.map(friend => {
+                    return <li>{friend}</li>
+                })
+            }
+        </ul>
+    </div>
+}
+
+const App = () => {
+    const name = "Subramanian";
+    const star = 4.5
+    const status = true;
+    //object
+    const address = {
+        city: 'Coimbatore'
+    }
+    //
+    const friends = ["Dodge", "Luke", "Nikson", "Milles"]
+    return <div>
+        <Profile name={name} star={star} friends={friends} status={status} address={address} />
+    </div>
+}
+
+ReactDOM.render(<App />, document.getElementById('root'))
+
+...........................................................................................
+				Object Destrucing
+...........................................................................................
+
+
+import React from 'react';
+import ReactDOM from 'react-dom'
+
+const Profile__ = props => {
+    const { name, star, status, address: { city }, friends } = props;
+    return <div>
+        <h2>Name : {name} </h2>
+        <h2>Star: {star}</h2>
+        <h2>Status :{status ? "Active" : "InActive"}</h2>
+        <address>City {city}</address>
+        <h2>Friends</h2>
+        <ul>
+            {
+                friends.map(friend => {
+                    return <li>{friend}</li>
+                })
+            }
+        </ul>
+    </div>
+}
+
+const Profile = ({ name, star, status, address: { city }, friends }) => <div>
+    <h2>Name : {name} </h2>
+    <h2>Star: {star}</h2>
+    <h2>Status :{status ? "Active" : "InActive"}</h2>
+    <address>City {city}</address>
+    <h2>Friends</h2>
+    <ul>
+        {
+            friends.map(friend =><li>{friend}</li>)
+        }
+    </ul>
+</div>
+
+const App = () => {
+    const name = "Subramanian";
+    const star = 4.5
+    const status = true;
+    //object
+    const address = {
+        city: 'Coimbatore'
+    }
+    //
+    const friends = ["Dodge", "Luke", "Nikson", "Milles"]
+    return <div>
+        <Profile name={name} star={star} friends={friends} status={status} address={address} />
+    </div>
+}
+
+ReactDOM.render(<App />, document.getElementById('root'))
+..............................................................................................
+				Classes and Properties
+............................................................................................
+
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom'
+
+
+
+class Profile__ extends Component {
+
+    render() {
+        console.log(this.props)
+        return <div>
+            <h2>Name : {this.props.name} </h2>
+            <h2>Star: {this.props.star}</h2>
+            <h2>Status :{this.props.status ? "Active" : "InActive"}</h2>
+            <address>City {this.props.address.city}</address>
+            <h2>Friends</h2>
+            <ul>
+                {
+                    this.props.friends.map(friend => <li>{friend}</li>)
+                }
+            </ul>
+        </div>
+    }
+}
+class Profile extends Component {
+
+    render() {
+        const { name, star, status, address: { city }, friends } = this.props;
+        return <div>
+            <h2>Name : {name} </h2>
+            <h2>Star: {star}</h2>
+            <h2>Status :{status ? "Active" : "InActive"}</h2>
+            <address>City {city}</address>
+            <h2>Friends</h2>
+            <ul>
+                {
+                    friends.map(friend => <li>{friend}</li>)
+                }
+            </ul>
+        </div>
+    }
+}
+
+const App = () => {
+    const name = "Subramanian";
+    const star = 4.5
+    const status = true;
+    //object
+    const address = {
+        city: 'Coimbatore'
+    }
+    //
+    const friends = ["Dodge", "Luke", "Nikson", "Milles"]
+    return <div>
+        <Profile name={name} star={star} friends={friends} status={status} address={address} />
+    </div>
+}
+
+ReactDOM.render(<App />, document.getElementById('root'))
+..............................................................................................
+				Lists and Keys
+..............................................................................................
+
+Warning: Each child in a list should have a unique "key" prop.
+
+key is react property,helps identify which items have changed are added , are removed.
+In order improve performance incase large list items, similar to index in databases.
+
+  <ul>
+                {
+                    friends.map((friend, index) => <li key={index.toString()} >{friend}</li>)
+                }
+            </ul>
+.............................................................................................
+Lists and UI design:
+...................
+
+List can be used to design different types of  ui.
+
+1.ListView -  ul ...li
+2.cardView  - div...div
+3.gridView - table ..tr
+..............................................................................................
+				  Default Props
+..............................................................................................
+
+import React from 'react';
+import ReactDOM from 'react-dom'
+
+//component
+const Profile = props => {
+    return <div>
+        <h2>Name : {props.name} </h2>
+        <h2>Star: {props.star}</h2>
+        <h2>Status :{props.status ? "Active" : "InActive"}</h2>
+        <address>City {props.address.city}</address>
+        <h2>Friends</h2>
+        <ul>
+            {
+                props.friends.map(friend => {
+                    return <li>{friend}</li>
+                })
+            }
+        </ul>
+    </div>
+}
+//default Props
+Profile.defaultProps = {
+    name: '',
+    star: 0,
+    status: false,
+    address: {
+        city: ''
+    },
+    friends: []
+
+}
+
+
+
+const App = () => {
+    const name = "Subramanian";
+    const star = 4.5
+    const status = true;
+    //object
+    const address = {
+        city: 'Coimbatore'
+    }
+    //
+    const friends = ["Dodge", "Luke", "Nikson", "Milles"]
+    return <div>
+        <Profile name={name} star={star} friends={friends} status={status} address={address} />
+        <Profile />
+        <Profile name="Mills" star={3} />
+    </div>
+}
+
+ReactDOM.render(<App />, document.getElementById('root'))
+..............................................................................................
+			  Property Constriants or Property Validation
+.............................................................................................
+
+if you want to enforce the property type validation, you can use prop constraints.
+Prop constrains only for development time.
+if prop validation fails, it will throw waring only.
+
+
+Steps:
+npm install --save prop-types
+
+
+Profile.propTypes = {
+    name: PropTypes.string,
+    star: PropTypes.number
+}
+<Profile name="Mills" star={"3"} />
+index.js:1 Warning: Failed prop type: Invalid prop `star` of type `string` supplied to `Profile`, expected `number`.
+    at Profile (http://localhost:3000/static/js/main.chunk.js:33:35)
+    at App
+
+
+import React from 'react';
+import ReactDOM from 'react-dom'
+import PropTypes from 'prop-types';
+
+//component
+const Profile = props => {
+    return <div>
+        <h2>Name : {props.name} </h2>
+        <h2>Star: {props.star}</h2>
+        <h2>Status :{props.status ? "Active" : "InActive"}</h2>
+        <address>City {props.address.city}</address>
+        <h2>Friends</h2>
+        <ul>
+            {
+                props.friends.map((friend,index) => {
+                    return <li key={index}>{friend}</li>
+                })
+            }
+        </ul>
+    </div>
+}
+//default Props
+Profile.defaultProps = {
+    name: '',
+    star: 0,
+    status: false,
+    address: {
+        city: ''
+    },
+    friends: []
+
+}
+//Prop Constrains
+Profile.propTypes = {
+    name: PropTypes.string,
+    star: PropTypes.number
+}
+
+
+const App = () => {
+    const name = "Subramanian";
+    const star = 4.5
+    const status = true;
+    //object
+    const address = {
+        city: 'Coimbatore'
+    }
+    //
+    const friends = ["Dodge", "Luke", "Nikson", "Milles"]
+    return <div>
+        <Profile name={name} star={star} friends={friends} status={status} address={address} />
+        <Profile />
+        <Profile name="Mills" star={"3"} />
+    </div>
+}
+
+ReactDOM.render(<App />, document.getElementById('root'))
+..............................................................................................
+				Data Mutation and Props
+..............................................................................................
+
+
+import React from 'react';
+import ReactDOM from 'react-dom'
+
+const Greeter = props => {
+    //override the name prop
+    props.name = "foo";
+    return <h1>
+        Hello {props.name}!
+    </h1>
+}
+
+const App = () => <div>
+    <Greeter name="Subramanian" />
+</div>
+
+
+ReactDOM.render(<App />, document.getElementById('root'))
+
+TypeError: Cannot assign to read only property 'name' of object '#<Object>'
+Greeter
+E:/session/inspop/my-app/src/index.js:6
+  3 | 
+  4 | const Greeter = props => {
+  5 |     //override the name prop
+> 6 |     props.name = "foo";
+  7 |     return <h1>
+  8 |         Hello {props.name}!
+  9 |     </h1>
+
+
+Compoent Design Principles:
+
+		Component is designed based on functional programming principles.
+
+1.Pure function
+
+A.function receives the set of args, which should return the same.
+
+  eg
+     function Greeter(name,message){
+
+             return name + message
+     }
+
+    Greeter('foo','hai')
+
+function should not do side effects(changing the input parameters, local variable,IO operation), if fun does, that function is called impure function.
+
+B. to be discussed later.
+
+
+In React where pure function is used.
+ 
+  In the component design.
+
+Every Component is pure function with respect props.
+Every component receives props as parameter , returns the same without mutation.
+  
+
+Impure function
+const Greeter = props => {
+    //override the name prop :mutation
+   props.name = "foo";
+    return <h1>
+        Hello {props.name}!
+    </h1>
+}
+
+because we try to mutate name prop. -  dont do this.
+
+According to pure function pattern, component has no right to change the data, just it is receiver and which displays only.
+
+			Props are read only , Component is pure
+..............................................................................................
+		  Component Driven Design:Thinking in Components:Component Communication
+................................................................................................
+
+Components should be broken into smallar and reusable.
+
+
+Component Communication:
+
+1.Parent to child
+
+2.Child to Parent
+
+3.Across the components
+
+
+1.Parent to child  :Single directinal data flow model
+ props
+
+Parent component will send data to child component ,child again can transfer data to its child.
+
+import React from 'react';
+import ReactDOM from 'react-dom'
+import logo from './logo.svg';
+
+//const Review = User,Comment
+
+export const Movie = props => {
+    return <div>
+        <h2>{props.title}</h2>
+        {/* <Review languages={props.reivew.languages} user={props.reivew.user} comment={props.reivew.comment} /> */}
+        {/* Using spread Operator we can pass all prop in short  */}
+        <Review {...props.reivew} />
+    </div>
+}
+
+export const Review = props => {
+    console.log(props)
+    return <div>
+        <User user={props.user}  />
+        <Languages languages={props.languages}  />
+        <Comment comment={props.comment} />
+    </div>
+}
+export const User = props => <div>
+    <h3>{props.user.name}</h3>
+    <Avatar url={props.user.imgUrl} />
+</div>
+
+export const Languages = props => <ul>
+    {
+        props.languages.map((language, index) => <li key={index}>{language}</li>)
+    }
+</ul>
+export const Avatar = props => <img height="50" width="50" src={props.url} />
+
+export const Comment = props => <div>
+    <h3>{props.comment.text}</h3>
+    {/* <h3>{props.}</h3> */}
+</div>
+
+
+const review = {
+    user: {
+        name: 'Subramanian',
+        imgUrl: logo
+    },
+    languages: ['english', 'tamil', 'hindi'],
+    comment: {
+        text: 'It is really good!',
+        date: new Date()
+    }
+}
+const App = () => <div>
+    <Movie title="The Hunter" reivew={review} />
+</div>
+
+
+ReactDOM.render(<App />, document.getElementById('root'))
+.............................................................................................
+				conditional Rendering
+.............................................................................................
+How to render component depending upon the state of your application?
+How to add conditions? - if or tenary.
+
+import React from 'react';
+import ReactDOM from 'react-dom'
+
+const PremiumUser = props => <div>
+    <h1>You are PremiumUser</h1>
+</div>
+
+const GuestUser = props => <div>
+    <h1>You are Guest</h1>
+</div>
+
+//conditional rendering
+const Page__ = props => {
+    const isLoggedIn = props.isLoggedIn;
+    if (isLoggedIn) {
+        return <PremiumUser />
+    } else {
+        return <GuestUser />
+    }
+}
+const Page___ = props => {
+    const isLoggedIn = props.isLoggedIn;
+    return isLoggedIn ? <PremiumUser /> : <GuestUser />
+}
+
+const Page = ({ isLoggedIn }) => isLoggedIn ? <PremiumUser /> : <GuestUser />
+
+Page.defaultProps = {
+    isLoggedIn: false
+}
+
+const isLoggedIn = true
+const App = () => <div>
+    <Page isLoggedIn={isLoggedIn} />
+</div>
+
+
+ReactDOM.render(<App />, document.getElementById('root'))
+..............................................................................................
+				 Component as prop
+..............................................................................................
+
+Tab
+Caresolu
+Container components
+
+How to design component that holds other component as child.
+
+<Page /> --- It means Page do not have child components
+<Page>
+ ?
+</Page> - it means Page can have child components
+import React from 'react';
+import ReactDOM from 'react-dom'
+import { Header, MenuBar } from './header'
+import { Footer } from './footer/footer'
+import { Body } from './body/body'
+
+const Page = props => <div>
+    {props.children}
+</div>
+const App = () => <div>
+    <Page>
+        <Header />
+        <MenuBar />
+        <Body />
+        <Footer />
+    </Page>
+</div>
+
+
+ReactDOM.render(<App />, document.getElementById('root'))
+..............................................................................................
+				Fragements
+..............................................................................................
+
+JSX Rule:
+
+1.YOu must wrapp sibblings inside container elements
+
+Valid
+ <div>
+   <h1>
+   <p>
+   <img>
+   <Trader/>
+ </div>
+
+Invalid:
+   <h1>
+   <p>
+   <img>
+   <Trader/>
+............
+What is Fragment?
+
+A  common pattern in React is for a component return multiple elements.
+
+
+function Greeter (){
+   return <h1></h1><p></p>
+}
+
+Here , the code throws error , the reason being , we cant have elements without root element.
+
+This rule some times, makes ui layout complex. sometime which may make difficult to adjust the ui layouts.
+import React, { Fragment } from 'react';
+import ReactDOM from 'react-dom'
+import { Header, MenuBar } from './header'
+import { Footer } from './footer/footer'
+
+const Page = props => <div>
+    {props.children}
+</div>
+
+const Grid = props => {
+    return <table border="1">
+        <thead >
+            <Columns />
+        </thead>
+        <GridBody users={props.datasource} />
+    </table>
+}
+const GridBody = props => {
+    return <>
+        <tbody>
+            {
+                props.users.map((user, index) => {
+                    return <tr key={index}>
+                        <th scope="row">{user.id}</th>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                    </tr>
+                })
+            }
+
+        </tbody>
+    </>
+}
+
+//withoutFragement
+// const Columns = props => {
+//     return <div>
+//         <td>Name</td>
+//         <td>Location</td>
+//     </div>
+// }
+//with Fragement
+
+// const Columns = props => {
+//     return <React.Fragment>
+//         <td>Name</td>
+//         <td>Location</td>
+//     </React.Fragment>
+// }
+
+// const Columns = props => {
+//     return <Fragment>
+//         <td>Name</td>
+//         <td>Location</td>
+//     </Fragment>
+// }
+
+const Columns = props => {
+    return <>
+        <th>id</th>
+        <th>name</th>
+        <th>email</th>
+    </>
+}
+
+const USERS = [
+    { id: 1, name: 'subramaian', email: 'subu@gmail.com' },
+    { id: 2, name: 'Dodge', email: 'dodge@gmail.com' }
+]
+const App = () => <div>
+    <Page>
+        <Header />
+        <MenuBar />
+        <Grid datasource={USERS} />
+        <Footer />
+    </Page>
+</div>
+
+
+ReactDOM.render(<App />, document.getElementById('root'))
+..............................................................................................
+			Data Sharing Patterns(Component Communication)
+
+
+1.Parent to child via props
+2.Parent to Grand child or across the components
+  2.1. via Context
+  2.2. via Redux
+
+...........................................................................................				            Context				
+
+
+What is Context?
+ 
+Object helps to transfer data from parent to anywhere in herierchy.
+
+Context provides a way to pass data through the component tree without having to pass props down manually at every level.
+
+When to use context?
+
+Context is designed to share data that can considered "global" for a tree of React components
+such as theme , login data, preferred langugage.
+
+
+
+Without Context:
+import React, { Fragment } from 'react';
+import ReactDOM from 'react-dom'
+
+const Toolbar = props => <div>
+    <ThemedButton theme={props.theme} />
+</div>
+
+const ThemedButton = props => <div>
+    <Button theme={props.theme} />
+</div>
+const Button = props => <div>
+    <button style={{ color: 'whitesmoke', backgroundColor: props.theme }}>Hello!</button>
+</div>
+const Page = props => <>
+    <Toolbar theme={props.theme} />
+</>
+const theme = {
+    dark: "black"
+}
+const App = () => <div>
+    <Page theme={theme.dark} />
+</div>
+
+
+ReactDOM.render(<App />, document.getElementById('root'))
+
+How to share prop without passing at every level.
+
+import React, { Fragment } from 'react';
+import ReactDOM from 'react-dom'
+
+
+
+const theme = {
+    dark: "red"
+}
+//create Context
+
+// const ThemeContext = React.createContext('dark')
+const { Provider, Consumer } = React.createContext('dark')
+
+
+// const App = () => <div>
+//     <ThemeContext.Provider value={theme}>
+//         <Page />
+//     </ThemeContext.Provider>
+// </div>
+const App = () => <div>
+    <Provider value={theme}>
+        <Page />
+    </Provider>
+</div>
+const Page = props => <>
+    <Toolbar />
+</>
+
+const Toolbar = props => <div>
+    <ThemedButton />
+</div>
+
+const ThemedButton = props => <div>
+    <Consumer>
+        {theme => {
+            return <Button theme={theme.dark} />
+        }
+        }
+    </Consumer>
+
+</div>
+const Button = props => <div>
+    <button style={{ color: 'whitesmoke', backgroundColor: props.theme }}>Hello!</button>
+</div>
+
+
+ReactDOM.render(<App />, document.getElementById('root'))
+..............................................................................................
 
 
 
