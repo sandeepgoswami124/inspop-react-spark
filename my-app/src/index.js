@@ -1,47 +1,44 @@
-import React, { Fragment } from 'react';
+/** @jsxImportSource theme-ui */
+
+import { ThemeProvider, Box, Grid } from 'theme-ui'
+
+import React from 'react';
 import ReactDOM from 'react-dom'
 
-
-
-const theme = {
-    dark: "red"
+//theme syntax 
+export const theme = {
+    fonts: {
+        body: 'system-ui, sans-serif',
+        heading: '"Avenir Next", sans-serif',
+        monospace: 'Menlo, monospace',
+    },
+    colors: {
+        text: '#000',
+        background: 'green',
+        primary: '#33e',
+    },
 }
-//create Context
-
-// const ThemeContext = React.createContext('dark')
-const { Provider, Consumer } = React.createContext('dark')
-
-
-// const App = () => <div>
-//     <ThemeContext.Provider value={theme}>
-//         <Page />
-//     </ThemeContext.Provider>
-// </div>
-const App = () => <div>
-    <Provider value={theme}>
-        <Page />
-    </Provider>
-</div>
-const Page = props => <>
-    <Toolbar />
-</>
-
-const Toolbar = props => <div>
-    <ThemedButton />
-</div>
-
-const ThemedButton = props => <div>
-    <Consumer>
-        {theme => {
-            return <Button theme={theme.dark} />
-        }
-        }
-    </Consumer>
-
-</div>
-const Button = props => <div>
-    <button style={{ color: 'whitesmoke', backgroundColor: props.theme }}>Hello!</button>
-</div>
-
+export const App = () => (
+    <ThemeProvider theme={theme}>
+        <h1
+            sx={{
+                color: 'primary',
+                backgroundColor: 'background',
+                fontFamily: 'body',
+            }}>
+            Hello
+        </h1>
+        <Box p={4} color="white" bg="primary">
+            Beep
+        </Box>
+        <hr/>
+        <Grid width={[128, null, 192]}>
+            <Box bg="primary">Box</Box>
+            <Box bg="muted">Box</Box>
+            <Box bg="primary">Box</Box>
+            <Box bg="muted">Box</Box>
+        </Grid>
+    </ThemeProvider>
+)
 
 ReactDOM.render(<App />, document.getElementById('root'))

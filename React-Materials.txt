@@ -1956,19 +1956,207 @@ const Button = props => <div>
 
 ReactDOM.render(<App />, document.getElementById('root'))
 ..............................................................................................
+				Styling React Apps
+..............................................................................................
+
+CSS: How to integrate CSS into React Apps.
+
+CSS can be added in react.
+via style attribute
+via class attribute
+
+<div class="container">
+</div>
+
+CSS can be your own css or third party libs and frameworks.
+
+1.tweeter bootstrap.
+2.theme-ui
 
 
+plain css:
 
 
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './App.css';
+
+const Page = props => {
+    return <div class="App ">
+        <p>
+            React Rocks!   <a
+                className="App-link"
+                href="https://reactjs.org"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Learn React
+            </a>
+        </p>
+
+    </div>
+}
+const App = props => <>
+    <Page />
+</>
+
+ReactDOM.render(<App />, document.getElementById('root'));
 
 
+index.js:1 Warning: Invalid DOM property `class`. Did you mean `className`?
+    at div
+    at Page
+    at App
 
 
+here we should not use class Attribute -  html attributes, if want to use any html attribute dont use directly , just refer the JSX Attribute guide.
 
 
+accept acceptCharset accessKey action allowFullScreen alt async autoComplete
+autoFocus autoPlay capture cellPadding cellSpacing challenge charSet checked
+cite classID className colSpan cols content contentEditable contextMenu controls
+controlsList coords crossOrigin data dateTime default defer dir disabled
+download draggable encType form formAction formEncType formMethod formNoValidate
+formTarget frameBorder headers height hidden high href hrefLang htmlFor
+httpEquiv icon id inputMode integrity is keyParams keyType kind label lang list
+loop low manifest marginHeight marginWidth max maxLength media mediaGroup method
+min minLength multiple muted name noValidate nonce open optimum pattern
+placeholder poster preload profile radioGroup readOnly rel required reversed
+role rowSpan rows sandbox scope scoped scrolling seamless selected shape size
+sizes span spellCheck src srcDoc srcLang srcSet start step style summary
+tabIndex target title type useMap value width wmode wrap
+
+          "Attributes are generally camel cased "
+..............................................................................................
+
+Style Attribute
+
+<p style="color:red">Hello</p>  - Pure HTML syntax.
+
+In React style attribute is not String rather "Style Object".
+
+Style Object:
+............
+
+It is javascript Representation of style.
+
+css style property  -  background-color:'red'
+js style property   -  backgroundColor:'red'
+
+const theme = { 
+ backgroundColor:'blue'
+}
+<p style={theme}>Hello</p>  - JSX syntax.
+
+<p style={ {backgroundColor:'blue'}}>Hello</p>  - JSX syntax.
+
+.............................................................................................					bootstrap integration
+.............................................................................................
+
+npm install bootstrap
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './App.css';
+import 'bootstrap/dist/css/bootstrap.css'
+
+const theme = {
+    backgroundColor: 'red',
+    fontSize:50
+}
+const Page = props => {
+    return <div className="container">
+        <p style={theme}>
+            React Rocks!   <a
+                className="App-link"
+                href="https://reactjs.org"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Learn React
+            </a>
+        </p>
+
+    </div>
+}
+const App = props => <>
+    <Page />
+</>
+
+ReactDOM.render(<App />, document.getElementById('root'));
+
+..............................................................................................
+				Theme-Ui
+
+It is abstraction on style attribute.
+
+npm install theme-ui
 
 
+"The sx prop lets you style elements inline, using values from your theme. "
+
+Syntax:
+
+export default (props) => (
+  <div
+    {...props}
+    sx={{
+      // values referencing scales defined in a theme
+      color: 'primary',
+      bg: 'lightgray',
+      fontFamily: 'body',
+      // raw CSS value
+      boxShadow: '0 0 1px 3px rgba(0, 0, 0, .125)',
+    }}
+  />
+)
 
 
+/** @jsxImportSource theme-ui */
 
+import { ThemeProvider, Box, Grid } from 'theme-ui'
 
+import React from 'react';
+import ReactDOM from 'react-dom'
+
+//theme syntax 
+export const theme = {
+    fonts: {
+        body: 'system-ui, sans-serif',
+        heading: '"Avenir Next", sans-serif',
+        monospace: 'Menlo, monospace',
+    },
+    colors: {
+        text: '#000',
+        background: 'green',
+        primary: '#33e',
+    },
+}
+export const App = () => (
+    <ThemeProvider theme={theme}>
+        <h1
+            sx={{
+                color: 'primary',
+                backgroundColor: 'background',
+                fontFamily: 'body',
+            }}>
+            Hello
+        </h1>
+        <Box p={4} color="white" bg="primary">
+            Beep
+        </Box>
+        <hr/>
+        <Grid width={[128, null, 192]}>
+            <Box bg="primary">Box</Box>
+            <Box bg="muted">Box</Box>
+            <Box bg="primary">Box</Box>
+            <Box bg="muted">Box</Box>
+        </Grid>
+    </ThemeProvider>
+)
+
+ReactDOM.render(<App />, document.getElementById('root'))
+..............................................................................................
+				  State
+.............................................................................................
+	
