@@ -2894,9 +2894,511 @@ ReactDOM.render(<App />, document.getElementById('root'))
 
 
 
+Life cycle:
+
+Phases:
+
+1.Mount
+ -constructor
+    called only once, for compoent initalization
+  constructors are not used very much
+ -render 
+    called for creating object tree(component tree) -  Virtual DOM.
+ -componentDidMount
+   called only one time, to ensure that vdom has transfered as real time.
+
+2.Update
+  new Props / setState/ forceUpdate trigger update cycle
+  
+  -render 
+   
+  -componentDidupdate
+    called after every update process is done
+
+3.UnMount
+   if any component is removed from the dom tree.
+
+  componentWillUnMount
+    used to clean up resources
 
 
 
+...............................................................................................
+
+Flow:
+
+
+Component tree-VDOM--Mount 
+
+User----Clicks button-- state Update---setState->will return new App state--render is called----creates new vdom with new state
+
+render --|new Frame----|Reconciliation----->Takes snapshot of rendered dom tree--diff it--patch it--update --repaint.
+
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+
+class Parent extends Component {
+
+    state = {
+        value: 0
+    }
+    //constructors
+    constructor() {
+        super()
+        console.log('Parent Constructor')
+    }
+    render() {
+        console.log('Parent render is called')
+        return <>
+            <Child />
+            <button onClick={() => {
+                this.setState(state => {
+                    return {
+                        value: state.value + 1
+                    }
+                })
+            }}>Increment</button>
+        </>
+    }
+    componentDidMount() {
+        console.log('Parent - componentDidMount  is called')
+
+    }
+    componentDidUpdate() {
+        console.log('Parent - componentDidUpdate  is called')
+
+    }
+
+}
+class Child extends Component {
+    //constructors
+    constructor() {
+        super()
+        console.log('Child Constructor')
+    }
+    render() {
+        console.log('Child render is called')
+        return <>
+        </>
+    }
+    componentDidMount() {
+        console.log('Child - componentDidMount  is called')
+
+    }
+    componentDidUpdate() {
+        console.log('Child - componentDidUpdate  is called')
+
+    }
+
+}
+
+const App = props => <div>
+    <Parent />
+</div>
+ReactDOM.render(<Parent />, document.getElementById('root'))
+...........................................................................................
+				Most use full Component Life cycle methods
+
+1.render
+2.componentDidMount
+ -Ajax calls
+ -timer calls
+ -websocket calls
+ -graphl calls
+
+
+Ajax Calls:
+
+React has no any api to make call.
+
+libs/api
+
+fetch
+axios
+
+
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+
+class TodoApp extends Component {
+
+    state = {
+        error: null,
+        isLoaded: false,
+        todos: []
+    }
+
+    render() {
+        const { error, isLoaded, todos } = this.state;
+        if (error) {
+            return <div>Error : {error.message}</div>
+        }
+        else if (!isLoaded) {
+            return <div>Loading....</div>
+        } else {
+            return <>
+                <ul>
+                    {todos.map((todo, index) => {
+                        return <li key={index}>
+                            {todo.title} - {todo.completed ? 'Completed' : 'Not Completed'}
+                        </li>
+                    })}
+                </ul>
+            </>
+        }
+
+
+    }
+    componentDidMount() {
+        const url = 'https://jsonplaceholder.typicode.com/todos'
+        fetch(url).then(async (response) => {
+            const todos = await response.json();
+            this.setState(prevState => {
+                return {
+                    error: prevState.error,
+                    isLoaded: true,
+                    todos: todos
+                }
+            })
+        }, error => {
+            this.setState(prevState => {
+                return {
+                    error: error,
+                    isLoaded: true,
+                    todos: prevState.todos
+                }
+            })
+        })
+    }
+
+
+}
+
+const App = props => <div>
+    <TodoApp />
+</div>
+ReactDOM.render(<App />, document.getElementById('root'))
+..............................................................................................
+				React Hooks
+..............................................................................................
+
+Hooks lets you use state and other react features without writing a class.
+
+Hooks Movtivations:
+
+1.Avoid confussion between class and function components.
+
+2.Reuse statefull logics among components
+
+3.Component composition of logic is possible.
+
+Hooks 
+What is hook in nutshell?
+
+ hook is a function  which may return value.
+
+hook function naming Convention:
+
+"use"+functionName ==>hook Syntax
+"useState"
+"useContext"
+"useEffect"
+"useAjax"
+"useWebSocket"
+etc....
+
+How to avoid state -setState ? How to introduce state inside functional compoent.
+
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+
+
+//hooks:useState
+const CounterApp = props => {
+    //declare state variables
+    const [value, setValue] = useState(props.init)
+    //Listener
+    const onIncrement = evt => {
+        setValue(state => {
+            return state + 1
+        })
+    }
+    return <div>
+        <h1>Value: {value}</h1>
+        <button onClick={onIncrement}>+</button>
+        <button onClick={() => setValue(value - 1)}>-</button>
+
+    </div>
+}
+
+
+const App = props => <div>
+    <CounterApp init={10} />
+</div>
+ReactDOM.render(<App />, document.getElementById('root'))
+............................................................................................
+	                   literal objects and hooks,immer produce
+............................................................................................
+
+import produce from 'immer';
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+
+
+const Counter = props => {
+    const initalState = {
+        values: {
+            inc: 10
+        }
+    };
+    const [counter, setCounter] = useState(initalState);
+    const onIncrement = evt => {
+        setCounter(produce(state => {
+            state.values.inc += 1;
+        }));
+    };
+
+    return <>
+        <h1>Counter App-Using State and Hooks</h1>
+        <h1>Value : {counter.values.inc}</h1>
+        <button onClick={onIncrement}>+</button>
+    </>
+
+};
+const App = () => {
+    return <Counter />
+}
+ReactDOM.render(<App />, document.getElementById('root'));
+
+.............................................................................................
+...........................................................................................
+				React Life Cycle Methods
+............................................................................................
+
+			 ComponentDidMount and ComponentDidUpdate
+		              How to Replace using Hooks
+				  useEffect
+
+
+Side Effects , DOM Manipulation,ResourceManagement:
+...................................................
+
+What is Side effects?
+
+Changining DOM elements after vdom is mounted into real dom - componentDidMount.
+
+import produce from 'immer';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
+
+
+const Page = props => {
+    const [count, setCount] = useState(0)
+    //compoentDidMount
+    useEffect(() => {
+        document.title = `You have clicked ${count} times`
+    })
+    return <>
+        <button onClick={() => setCount(count + 1)}>Hit</button>
+    </>
+};
+const App = () => {
+    return <Page />
+}
+ReactDOM.render(<App />, document.getElementById('root'));
+.............................................................................................
+				Multihooks 
+.............................................................................................
+How many hooks we can have in a component?
+
+many.
+import produce from 'immer';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
+
+
+const Counter = props => {
+    const [count, setCount] = useState(0)
+    const [like, setLike] = useState(10);
+
+    //compoentDidMount
+    useEffect(() => {
+        document.title = `You have clicked ${count} times`
+    })
+    useEffect(() => {
+        setTimeout(() => {
+            alert('You have been hacked')
+        }, 10000)
+    })
+    return <>
+        <h1>Likes {like}</h1>
+        <button onClick={() => setCount(count + 1)}>Hit</button>
+        <button onClick={() => setLike(like + 2)}>Like</button>
+    </>
+};
+const App = () => {
+    return <Counter />
+}
+ReactDOM.render(<App />, document.getElementById('root'));
+.............................................................................................
+			ComponentwillUnMount - useEffect Hook.
+   useEffect(() => {
+        document.title = `You have clicked ${count} times`
+ 
+        return function() {
+           //component clean up code
+        }
+
+    })
+
+import produce from 'immer';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
+
+
+const Counter = props => {
+    const [count, setCount] = useState(0)
+    const [like, setLike] = useState(10);
+
+    useEffect(() => {
+        document.title = `You have clicked ${count} times`
+        //clean up code
+        return function () {
+            //unsubscrption/closing sockets....
+            console.log('clean')
+        }
+    })
+    return <>
+        <h1>Likes {like}</h1>
+        <button onClick={() => setCount(count + 1)}>Hit</button>
+        <button onClick={() => setLike(like + 2)}>Like</button>
+    </>
+};
+const App = () => {
+    return <Counter />
+}
+ReactDOM.render(<App />, document.getElementById('root'));
+..............................................................................................
+Built in Hooks from React itself:
+-useState
+-useEffect
+-useContext
+
+-useReducer
+-useCallback
+-useMemo
+-useRef
+-useLayoutEffect
+etc....
+.............................................................................................
+					Custom Hooks
+...........................................................................................
+
+//Custom Hooks
+import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
+
+//features;
+
+const Customer = props => {
+    //feature-1 update Screen title
+    const [screen, setScreen] = useState('Customer Manager App')
+    //feature 2 - get Window width
+    const [width, setWidth] = useState(window.innerWidth);
+
+    //useEffect to update window title after component mounted into dom
+    useEffect(() => {
+        document.title = screen;
+    })
+    
+    useEffect(() => {
+        const handleResize = () => setWidth(window.innerWidth)
+        //imperative dom listner
+        window.addEventListener('resize', handleResize)
+        //clean up code
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        }
+    });
+
+    return <div>
+        <h1>Custom Hooks</h1>
+        <h1>Current Window width {width}</h1>
+        <button onClick={() => {
+            setScreen('CustomerManager App-Update')
+        }}>Update Title</button>
+    </div>
+};
+
+const App = () => {
+    return <div>
+        <Customer />
+    </div>
+}
+ReactDOM.render(<App />, document.getElementById('root'));
+.............................................................................................
+
+CustomHook- windowtitle
+In the above code, we have dubbed some dom related code inside customer component, which is not good.
+
+what if i want changing title of the screen in other components, we have to duplicate the code.
+
+How to write resuable code? 
+  hooks- write all duplicate code into a hook.
+
+In the above code , we have so many hooks which makes your application less maintainable, testable , code duplication.
+For eg, i want window resize behaviour in another component.
+
+Custom hooks, you can create windowresize as custom Hook.
+
+How to write custom hooks?
+
+Custom hooks are plain javascript function.
+function will start with "use+HookName" , but name can be any thing but it is recommended.
+
+.............................................................................................
+
+src/hooks/usewindowtitlehook.js
+
+import { useState, useEffect } from 'react';
+
+
+function useWindowTitle(windowTitle = '') {
+    const [screen, setScreen] = useState(windowTitle)
+    //useEffect to update window title after component mounted into dom
+    useEffect(() => {
+        document.title = screen;
+    })
+    //return object, so that caller can use this api
+    return {
+        screen,
+        setScreen
+    };
+}
+
+export { useWindowTitle };
+
+src/hooks/usewindowwidthhook.js
+import { useState, useEffect } from 'react';
+
+
+
+function useWindowWidth() {
+    const [width, setWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => setWidth(window.innerWidth)
+        //imperative dom listner
+        window.addEventListener('resize', handleResize)
+        //clean up code
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        }
+    });
+    return width;
+}
+
+export { useWindowWidth }
 
 
 

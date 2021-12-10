@@ -1,58 +1,28 @@
-import React, { Component } from 'react';
+//Custom Hooks
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import produce from 'immer';
+import { useWindowTitle } from './hooks/usewindowtitlehook';
+import { useWindowWidth } from './hooks/usewindowwidth';
 
-class TodoApp extends Component {
-    state = {
-        items: [],
-        text: ''
-    }
+//features;
 
-    handleChange = evt => {
-        this.setState(prvState => {
-            return {
-                items: prvState.items,
-                text: evt.target.value
-            }
-        })
-    }
+const Customer = props => {
+    //feaature-1 update Screen title
+    const {setScreen } = useWindowTitle('Customer Manager')
+    //feature 2 - get Window width
+    const width = useWindowWidth();
+    return <div>
+        <h1>Custom Hooks</h1>
+        <h1>Current Window width {width}</h1>
+        <button onClick={() => {
+            setScreen('CustomerManager App-Update')
+        }}>Update Title</button>
+    </div>
+};
 
-    handleSubmit = evt => {
-        //stop firing default event submission
-        evt.preventDefault();
-        if (this.state.text.length === 0) {
-            return;
-        }
-        const newItem = {
-            text: this.state.text,
-            id: Math.random()
-        }
-        this.setState(preState => {
-            return { ...preState, items: preState.items.concat(newItem), text: '' }
-        })
-    }
-
-    render() {
-        return <>
-            <h3>TODO</h3>
-            <TodoList items={this.state.items} />
-            <form onSubmit={this.handleSubmit}>
-                <label htmlFor="new-todo">What needs to be done?</label>
-                <input id="new-todo" onChange={this.handleChange} value={this.state.text} />
-                <button>Add #{this.state.items.length + 1}</button>
-            </form>
-        </>
-    }
+const App = () => {
+    return <div>
+        <Customer />
+    </div>
 }
-const TodoList = props => {
-    return <ul>
-        {props.items.map(item => {
-            return <li key={item.id}>{item.text}</li>
-        })}
-    </ul>
-}
-
-const App = props => <div>
-    <TodoApp />
-</div>;
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(<App />, document.getElementById('root'));
