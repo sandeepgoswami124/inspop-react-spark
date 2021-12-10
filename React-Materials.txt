@@ -1970,7 +1970,7 @@ via class attribute
 
 CSS can be your own css or third party libs and frameworks.
 
-1.tweeter bootstrap.
+1.twetter bootstrap.
 2.theme-ui
 
 
@@ -2159,4 +2159,746 @@ ReactDOM.render(<App />, document.getElementById('root'))
 ..............................................................................................
 				  State
 .............................................................................................
+..............................................................................................
+				State-Dynamic UI - Event Handling
+.............................................................................................
+
+
+state :
+
+state is another way of representing data inside component.
+
+Points:
+
+1.with respect to props, component never modifies data / component never mutates the data.
+  -Based on fp principle called "pure function".
+
+2.what if i want to change data /mutate data?
+ props never help us, then we need to look at new pattern , that is called state.
+
+state helps to modifiy data/ mutate data.
+
+Component can change the data.
+
+How Component can change the data?
+
+-Via State
+
+How state can be changed
+
+-Via Events
+
+When ever the component change the data via events, component need to repaint, React uses an alogorthim "Diff algorthim" - virtual dom.
+
+State changes should be done in pure function.
+
+.we have 2nd rule ,now we will discuss now.
+
+
+state
+The state contains data specific to this component that may change over time. The state is user-defined, and it should be a plain JavaScript object.
+
+
+Handing Event:
+Handling events in react elements is similar to handling events on DOM elements.
+There are differences.
+
+=>React events are named camelCase rather lowercase.
+=>With JSX we pass a function as the event handler, rather than a string.
+
+<button onclick="onSave()"> - html
+
+<button onClick={listener}>
+
+Event handler takes event object as arg. In React this event object is instance of "SyntheticEvent"
+
+  onIncrement = event => {
+        console.log(event)
+        console.log('onIncrement')
+        //mutate the state.
+        this.state.value = this.state.value + 1
+        console.log(this.state)
+    };
+
+Here the state is mutated directly. dont do this. , we cant .
+
+React uses a concept called pure function. through pure function only we can update the state.
+
+
+
+Pattern - 1 : create new Object and copy the existing object properties into new Object.
+
+
+
+//impure version
+// function updateProfile(profile) {
+//     //mutatation
+//     profile.city = 'Coimbatore';
+//     return profile;
+// }
+
+
+//pure function : in order to create immutable representation of object 
+//we have three patterns.
+
+//pattern -1
+function updateProfile(profile) {
+    //new object
+    //copy the properties of old object and modify the property what you want todo
+    return {
+        id: profile.id,
+        name: profile.name,
+        city: 'Coimbatore'
+    };
+}
+
+
+let profile = {
+    id: 1,
+    name: 'subramanian',
+    city: 'Chennai'
+};
+
+//Freeze the object before modification.
+Object.freeze(profile);
+
+let updatedProfile = updateProfile(profile);
+console.log(updatedProfile);
+//same object or different object
+console.log("Same Object (profile===updatedProfile) ? =>", updatedProfile === profile);
+///////////////////////////////////////////////////////////////////////////////////
+
+// function addNewPower(person) {
+//     //add new property
+//     person.specialPower = 'invisibility';
+//     return person;
+// }
+
+function addNewPower(person) {
+    return {
+        firstName: person.firstName,
+        lastName: person.lastName,
+        address: {
+            street: person.address.street,
+            city: person.address.city,
+            state: person.address.state
+        },
+        specialPower: 'invisibility'
+    };
+}
+let person = {
+    firstName: 'Subramanian',
+    lastName: 'Murugan',
+    address: {
+        street: '10 th street',
+        city: 'Coimbatore',
+        state: 'TN'
+    }
+};
+console.log('old Person', person);
+
+let newPerson = addNewPower(person);
+
+console.log('new Person', newPerson);
+
+console.log("Same Object (person===newPerson) ? =>", person === newPerson);
+.............................................................................................
+.............................................................................................
+
+.............................................................................................
+
+Pattern - 2 : Object.assign
+
+//pattern -2
+function updateProfile(profile) {
+    //new object
+    return Object.assign({}, profile, { city: 'Coimbatore' })
+}
+
+
+let profile = {
+    id: 1,
+    name: 'subramanian',
+    city: 'Chennai'
+};
+
+//Freeze the object before modification.
+Object.freeze(profile);
+
+let updatedProfile = updateProfile(profile);
+console.log(updatedProfile);
+//same object or different object
+console.log("Same Object (profile===updatedProfile) ? =>", updatedProfile === profile);
+///////////////////////////////////////////////////////////////////////////////////
+
+// function addNewPower(person) {
+//     //add new property
+//     person.specialPower = 'invisibility';
+//     return person;
+// }
+
+function addNewPower(person) {
+    // return {
+    //     firstName: person.firstName,
+    //     lastName: person.lastName,
+    //     address: {
+    //         street: person.address.street,
+    //         city: person.address.city,
+    //         state: person.address.state
+    //     },
+    //     specialPower: 'invisibility'
+    // };
+    return Object.assign({}, person, { specialPower: 'invisibility' })
+
+}
+let person = {
+    firstName: 'Subramanian',
+    lastName: 'Murugan',
+    address: {
+        street: '10 th street',
+        city: 'Coimbatore',
+        state: 'TN'
+    }
+};
+console.log('old Person', person);
+
+let newPerson = addNewPower(person);
+
+console.log('new Person', newPerson);
+
+console.log("Same Object (person===newPerson) ? =>", person === newPerson);
+.............................................................................................
+
+Pattern 3: Spread Operator
+//pattern -2
+function updateProfile(profile) {
+    //new object
+    //  return Object.assign({}, profile, { city: 'Coimbatore' })
+    return { ...profile, city: 'Coimbatore' }
+}
+
+
+let profile = {
+    id: 1,
+    name: 'subramanian',
+    city: 'Chennai'
+};
+
+//Freeze the object before modification.
+Object.freeze(profile);
+
+let updatedProfile = updateProfile(profile);
+console.log(updatedProfile);
+//same object or different object
+console.log("Same Object (profile===updatedProfile) ? =>", updatedProfile === profile);
+///////////////////////////////////////////////////////////////////////////////////
+
+// function addNewPower(person) {
+//     //add new property
+//     person.specialPower = 'invisibility';
+//     return person;
+// }
+
+function addNewPower(person) {
+    // return {
+    //     firstName: person.firstName,
+    //     lastName: person.lastName,
+    //     address: {
+    //         street: person.address.street,
+    //         city: person.address.city,
+    //         state: person.address.state
+    //     },
+    //     specialPower: 'invisibility'
+    // };
+    // return Object.assign({}, person, { specialPower: 'invisibility' })
+    return {
+        ...person, specialPower: 'invisibility'
+    }
+
+}
+let person = {
+    firstName: 'Subramanian',
+    lastName: 'Murugan',
+    address: {
+        street: '10 th street',
+        city: 'Coimbatore',
+        state: 'TN'
+    }
+};
+console.log('old Person', person);
+
+let newPerson = addNewPower(person);
+
+console.log('new Person', newPerson);
+
+console.log("Same Object (person===newPerson) ? =>", person === newPerson);
+.............................................................................................
+				.............................................................................................
+				Mutable and Immutable with Respect to arrays
+.....................................................................................
+
+//array 
+
+//immpure function
+// function addItem(items) {
+//     //add 
+//     items.push(4);
+//     return items;
+// }
+// //pattern 1
+// function addItem(items) {
+//     //items.push(4);
+//     return items.concat(4);
+// }
+
+//pattern 2
+function addItem(items) {
+    //items.push(4);
+    return [...items, 4];
+}
+let items = [1, 2, 3];
+console.log('Old Items => ', items);
+let newItems = addItem(items)
+console.log('new Items => ', newItems);
+
+console.log("Same Object (oldItems===newItems) ? =>", items === newItems);
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+function increasePointByTwo(state){
+     //spread notation
+     return {
+        ...state, // level-0 copy
+        house: {
+            ...state.house, //level -1 copy
+            points: state.house.points + 2
+        }
+    }
+
+}
+
+let state = {
+    house: {
+        name: 'RavenClaw',
+        points: 10
+    }
+}
+//increase pointer by 2
+let newState = increasePointByTwo(state);
+
+console.log("Same Object (state===newState) ? =>", state === newState);
+
+function updateMobileNo(customer, mobileno) {
+
+    return {
+        ...customer,
+        contact: {
+            ...customer.contact,
+            communication: {
+                ...customer.contact.communication,
+                mobileno: mobileno
+            }
+        }
+    }
+
+}
+
+let customer = {
+    id: 1,
+    name: 'Subramanian',
+    contact: {
+        address: {
+            city: 'Coimbatore'
+        },
+        communication: {
+            mobileno: '9000000000'
+        }
+    }
+}
+console.log(customer);
+
+const updatedCustomer = updateMobileNo(customer, '9003706368')
+console.log("Same Object (customer===updatedCustomer) ? =>", customer === updatedCustomer);
+console.log(updatedCustomer);
+..............................................................................................
+					immer.js
+				 (Very Smart immutable lib)
+..............................................................................................
+
+Immer simplifies handling immutable data structures.
+
+How to access object properties and update?
+
+
+our code
+state.house.points = state.house.points +2
+
+immercode
+{
+        ...state, // level-0 copy
+        house: {
+            ...state.house, //level -1 copy
+            points: state.house.points + 2
+        }
+    }
+
+mutable way of writing immutable code.
+import produce from "immer";
+
+function updateProfile(profile) {
+
+    return produce(profile, draft => {
+        //mutable code but it is immutable
+        console.log(draft)
+        draft.city = 'Coimbatore'
+    })
+}
+
+let profile = {
+    id: 1,
+    name: 'subramanian',
+    city: 'Chennai'
+};
+
+let updatedProfile = updateProfile(profile);
+console.log(updatedProfile);
+console.log("Same Object (profile===updatedProfile) ? =>", updatedProfile === profile);
+
+function updateMobileNo(customer, mobileno) {
+    // return {
+    //     ...customer,
+    //     contact: {
+    //         ...customer.contact,
+    //         communication: {
+    //             ...customer.contact.communication,
+    //             mobileno: mobileno
+    //         }
+    //     }
+    // }
+    return produce(customer, newCustomer => {
+        newCustomer.contact.communication.mobileno = mobileno
+    });
+
+}
+
+let customer = {
+    id: 1,
+    name: 'Subramanian',
+    contact: {
+        address: {
+            city: 'Coimbatore'
+        },
+        communication: {
+            mobileno: '9000000000'
+        }
+    }
+}
+console.log(customer);
+
+const updatedCustomer = updateMobileNo(customer, '9003706368')
+console.log("Same Object (customer===updatedCustomer) ? =>", customer === updatedCustomer);
+console.log(updatedCustomer);
+..............................................................................................
+
+..............................................................................................
+				React and State Management
+..............................................................................................
+
+React state mutatations can be done only inside class components, but we have now lot of abstractions- now a days we can  use state inside functional components as well using hooks.
+
+State,How to mutate,Event Handling.
+.....................................
+
+
+
+setState(updater, [callback]):NewState/NextState
+
+updater - which is function, where we write immutable logic
+
+updater syntax
+
+function(previousState) {
+  return newStateObject
+}
+
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import produce from 'immer';
+
+class Counter extends Component {
+    //state 
+    state = {
+        value: 0
+    }
+    //event handler
+    onIncrement = event => {
+        console.log(event)
+        console.log('onIncrement')
+        //mutate the state.
+        //this.state.value = this.state.value + 1
+        //pure function: react provides built in pure function , 
+        // this.setState(function (prevState) {
+        //     //return  new State
+        //     return {
+        //         value: prevState.value + 1
+        //     }
+
+        // })
+        // this.setState(prevState => {
+        //     //return  new State
+        //     return {
+        //         value: prevState.value + 1
+        //     }
+
+        // })
+
+        // this.setState(prevState => {
+        //     //return  new State
+        //     return Object.assign({}, prevState, { value: prevState.value + 1 })
+
+        // })
+        // this.setState(prevState => {
+        //     //return  new State
+        //     return { ...prevState, value: prevState.value + 1 }
+        // })
+        this.setState(prevState => {
+            //return  new State
+            return produce(prevState, draft => {
+                draft.value += 1
+            });
+        })
+        console.log(this.state)
+    };
+    render() {
+        console.log(this.state)
+        return <>
+            <h1>Counter-State</h1>
+            <h2>Value {this.state.value}</h2>
+            <button onClick={this.onIncrement}>+</button>
+        </>
+    }
+}
+
+const App = props => <div>
+    <Counter />
+</div>;
+ReactDOM.render(<App />, document.getElementById('root'))
+.............................................................................................
+			 Event Handlers - inline, external event handlers
+.............................................................................................
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import produce from 'immer';
+
+class Counter extends Component {
+    //state 
+    state = {
+        value: 0
+    }
+    //event handler :External event handler
+    onIncrement = event => {
+        this.setState(prevState => {
+            return produce(prevState, draft => {
+                draft.value += 1
+            });
+        })
+    };
+    render() {
+        console.log(this.state)
+        return <>
+            <h1>Counter-State</h1>
+            <h2>Value {this.state.value}</h2>
+            <button onClick={this.onIncrement}>+</button>
+            <button onClick={event => {
+                this.setState(prevState => {
+                    return produce(prevState, draft => {
+                        draft.value -= 1
+                    });
+                })
+            }}>-</button>
+        </>
+    }
+}
+
+const App = props => <div>
+    <Counter />
+</div>;
+ReactDOM.render(<App />, document.getElementById('root'))
+.............................................................................................
+				List and events
+.............................................................................................
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import produce from 'immer';
+import { COMMENTS } from './mock-data/comments';
+
+class CommentList extends Component {
+    //state 
+    state = {
+        body: ''
+    }
+
+    selectComment = body => {
+        console.log(body)
+        this.setState(prevState => {
+            return produce(prevState, draft => {
+                draft.body = body;
+            });
+        })
+    }
+
+    render() {
+        return <>
+            <h1>List</h1>
+            <ul>
+                {
+                    this.props.comments.map((comment, index) => {
+                        return <li key={index} onClick={(event) => {
+                            this.selectComment(comment.body);
+                        }} >{comment.name}</li>
+                    })
+                }
+            </ul>
+            <hr />
+            <h3>{this.state.body}</h3>
+        </>
+    }
+}
+
+const App = props => <div>
+    <CommentList comments={COMMENTS} />
+</div>;
+ReactDOM.render(<App />, document.getElementById('root'))
+.............................................................................................
+		  State,Props,Container Components and Presentational Components
+.............................................................................................
+
+Property types:
+1.static prop - hardcoded
+2.dynamic prop - state as a prop
+3.function as prop
+
+
+According react coding best practice, state,logic and ui must be separated.
+
+The component having state and logic, called "container components".
+The component having UI called "Presentational Components". ->Gets data as prop
+
+
+
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import produce from 'immer';
+
+//container components
+class Counter extends Component {
+    //state 
+    state = {
+        value: 0
+    }
+    onIncrement = event => {
+        this.setState(prevState => {
+            return produce(prevState, draft => {
+                draft.value += 1
+            });
+        })
+    };
+    render() {
+        return <>
+            <CounterView {...this.state} onIncrement={this.onIncrement} />
+        </>
+    }
+}
+//Presentational component
+const CounterView = props => {
+    return <>
+        <h1>State + Props</h1>
+        <h2>Value {props.value}</h2>
+        <button onClick={props.onIncrement}>+</button>
+    </>
+}
+
+const App = props => <div>
+    <Counter />
+</div>;
+ReactDOM.render(<App />, document.getElementById('root'))
+.............................................................................................
+			Input,SyntheticEvent
+..............................................................................................
+
+Apis of synthetic Event
+
+1.target
+2.preventDefault
+3.stopPropaation()
+
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import produce from 'immer';
+
+class TodoApp extends Component {
+    state = {
+        items: [],
+        text: ''
+    }
+
+    handleChange = evt => {
+        this.setState(prvState => {
+            return {
+                items: prvState.items,
+                text: evt.target.value
+            }
+        })
+    }
+
+    handleSubmit = evt => {
+        //stop firing default event submission
+        evt.preventDefault();
+        if (this.state.text.length === 0) {
+            return;
+        }
+        const newItem = {
+            text: this.state.text,
+            id: Math.random()
+        }
+        this.setState(preState => {
+            return { ...preState, items: preState.items.concat(newItem), text: '' }
+        })
+    }
+
+    render() {
+        return <>
+            <h3>TODO</h3>
+            <TodoList items={this.state.items} />
+            <form onSubmit={this.handleSubmit}>
+                <label htmlFor="new-todo">What needs to be done?</label>
+                <input id="new-todo" onChange={this.handleChange} value={this.state.text} />
+                <button>Add #{this.state.items.length + 1}</button>
+            </form>
+        </>
+    }
+}
+const TodoList = props => {
+    return <ul>
+        {props.items.map(item => {
+            return <li key={item.id}>{item.text}</li>
+        })}
+    </ul>
+}
+
+const App = props => <div>
+    <TodoApp />
+</div>;
+ReactDOM.render(<App />, document.getElementById('root'))
+.............................................................................................
+			 Component Life Cycles - Rest api integration
+
+
+
+
+
+
+
+
+
+
 	
